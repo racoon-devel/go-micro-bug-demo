@@ -1,11 +1,25 @@
 syntax = "proto3";
 
-// Example message
+import "google/protobuf/timestamp.proto";
+
+option go_package = "../proto";
+
 message Event {
-	// unique id
-	string id = 1;
-	// unix timestamp
-	int64 timestamp = 2;
-	// message
-	string message = 3;
+  google.protobuf.Timestamp time = 1;
+  string text = 2;
+  map<string, string> detailed = 3;
+}
+
+// пользовательские уведомления
+message Notification {
+  enum Kind {
+    DownloadComplete = 0;
+    DownloadFailed = 1;
+    SettingsChanged = 2;
+    TranscodingComplete = 3;
+    TranscodingFailed = 4;
+  }
+
+  Event event = 1;
+  Kind kind = 2;
 }

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	proto "github.com/go-micro/examples/pubsub/srv/proto"
 	"go-micro.dev/v4"
 	"go-micro.dev/v4/metadata"
@@ -15,7 +17,7 @@ import (
 type Sub struct{}
 
 // Method can be of any name
-func (s *Sub) Process(ctx context.Context, event *proto.Event) error {
+func (s *Sub) Process(ctx context.Context, event proto.Notification) error {
 	md, _ := metadata.FromContext(ctx)
 	log.Logf("[pubsub.1] Received event %+v with metadata %+v\n", event, md)
 	// do something with event
@@ -23,8 +25,9 @@ func (s *Sub) Process(ctx context.Context, event *proto.Event) error {
 }
 
 // Alternatively a function can be used
-func subEv(ctx context.Context, event *proto.Event) error {
+func subEv(ctx context.Context, event proto.Notification) error {
 	md, _ := metadata.FromContext(ctx)
+	fmt.Println(md)
 	log.Logf("[pubsub.2] Received event %+v with metadata %+v\n", event, md)
 	// do something with event
 	return nil

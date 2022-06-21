@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"context"
+
 	proto "github.com/go-micro/examples/pubsub/srv/proto"
 	"go-micro.dev/v4"
 	"go-micro.dev/v4/util/log"
-	"github.com/pborman/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // send events using the publisher
@@ -17,10 +18,12 @@ func sendEv(topic string, p micro.Publisher) {
 
 	for _ = range t.C {
 		// create new event
-		ev := &proto.Event{
-			Id:        uuid.NewUUID().String(),
-			Timestamp: time.Now().Unix(),
-			Message:   fmt.Sprintf("Messaging you all day on %s", topic),
+		ev := &proto.Notification{
+			Event: &proto.Event{
+				Time: timestamppb.Now(),
+				Text: fmt.Sprintf("Messaging you all day on %s", topic),
+			},
+			Kind: proto.Notification_DownloadComplete,
 		}
 
 		log.Logf("publishing %+v\n", ev)
@@ -41,8 +44,8 @@ func main() {
 	service.Init()
 
 	// create publisher
-	pub1 := micro.NewPublisher("example.topic.pubsub.1", service.Client())
-	pub2 := micro.NewPublisher("example.topic.pubsub.2", service.Client())
+	pub1 := micro.NewEvent("example.topic.pubsub.1", service.Client())
+	pub2 := micro.NewEvent("example.topic.pubsub.2", service.Client())
 
 	// pub to topic 1
 	go sendEv("example.topic.pubsub.1", pub1)
